@@ -25,7 +25,7 @@ function App() {
     useEffect(() => {
         const timeout = setTimeout(() => {
             sorter.shuffle()
-        }, 5000)
+        }, 1000)
 
         return () => clearTimeout(timeout)
     }, [])
@@ -33,7 +33,7 @@ function App() {
     useEffect(() => {
         const timeout = setTimeout(() => {
             sorter.quickSort()
-        }, 15000)
+        }, 8000)
 
         return () => clearTimeout(timeout)
     }, [])
