@@ -7,6 +7,7 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 function App() {
     const size = 40
     const [algorithm, setAlgorithm] = useState<string>("Bubble Sort")
+    setAlgorithm("Bubble Sort")
     const [arr, setArr] = useState<number[]>(Array.from(Array(size).keys()))
 
     const swap = async (a: number, b: number) => {
