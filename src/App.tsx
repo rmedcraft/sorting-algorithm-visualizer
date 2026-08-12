@@ -5,9 +5,8 @@ import { useEffect, useState } from "react"
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 function App() {
-    const size = 40
-    const [algorithm, setAlgorithm] = useState<string>("Bubble Sort")
-    setAlgorithm("Bubble Sort")
+    const size = 50
+    const [algorithm,] = useState<string>("Quick Sort")
     const [arr, setArr] = useState<number[]>(Array.from(Array(size).keys()))
 
     const swap = async (a: number, b: number) => {
@@ -19,14 +18,12 @@ function App() {
             return newArr
         })
         await wait(100)
-        console.log("external", arr)
     }
 
     const sorter = new Sorter(swap, size)
 
     useEffect(() => {
         const timeout = setTimeout(() => {
-            console.log("shuffling")
             sorter.shuffle()
         }, 5000)
 
@@ -35,9 +32,8 @@ function App() {
 
     useEffect(() => {
         const timeout = setTimeout(() => {
-            console.log("sorting")
-            sorter.bubbleSort()
-        }, 20000)
+            sorter.quickSort()
+        }, 15000)
 
         return () => clearTimeout(timeout)
     }, [])

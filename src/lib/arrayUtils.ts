@@ -1,9 +1,5 @@
-/**
- * in react, you can set up useState with arrays, but it treats all arrays as immutable. 
- * all of these functions will return a new array instead of altering the array in place.  
- * */
-
 export class Sorter {
+    // visualSwap is the method for swapping the array on the frontend. arr is the backend array separate from the frontend. Both should always have the same values. 
     private visualSwap: (a: number, b: number) => Promise<void>
     private arr: number[]
 
@@ -14,16 +10,15 @@ export class Sorter {
     }
 
     private async swap(a: number, b: number) {
-        console.log(`swapping ${a} and ${b}`)
         if (a >= this.arr.length || b >= this.arr.length) {
             throw new Error(`Index out of bounds. Tried to swap indexes ${a} and ${b}, but indices only go up to ${this.arr.length - 1}`);
         }
 
         [this.arr[a], this.arr[b]] = [this.arr[b], this.arr[a]]
-        console.log("internal", this.arr)
         await this.visualSwap(a, b)
     }
 
+    // Fisher-Yates
     public async shuffle() {
         for (let i = this.arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -41,7 +36,10 @@ export class Sorter {
         return true
     }
 
-    // sorting algorithms
+    /**
+     * sorting algorithms
+     */
+
     public async bubbleSort() {
         while (!this.isSorted()) {
             for (let i = 0; i < this.arr.length - 1; i++) {
@@ -51,26 +49,36 @@ export class Sorter {
             }
         }
     }
-}
 
+    public async quickSort() {
+        const partition = async (low: number, high: number) => {
+            // all the numbers before the pivot should be less than it, and all the numbers after should be greater
+            const pivot = this.arr[high]
 
-export function swap(arr: any[], index1: number, index2: number) {
-    const newArr = [...arr]
-    newArr[index1] = newArr[index2]
-    newArr[index2] = arr[index1]
-    return newArr
-}
+            // right position of the pivot found so far
+            let i = low - 1
 
-// Fisher-Yates
-export function shuffle(arr: any[]) {
-    const newArr = [...arr]
+            for (let j = low; j <= high - 1; j++) {
+                if (this.arr[j] < pivot) {
+                    i++;
+                    await this.swap(i, j)
+                }
+            }
 
-    for (let i = newArr.length - 1; i > 0; i--) {
+            // move pivot to be after smaller elements
+            await this.swap(i + 1, high)
+            return i + 1
+        }
 
-        const j = Math.floor(Math.random() * (i + 1));
+        const quickSortInner = async (low: number, high: number) => {
+            if (low < high) {
+                let partitionIndex = await partition(low, high)
 
-        [newArr[i], newArr[j]] = [newArr[j], newArr[i]]
+                await quickSortInner(low, partitionIndex - 1)
+                await quickSortInner(partitionIndex + 1, high)
+            }
+        }
+
+        quickSortInner(0, this.arr.length - 1)
     }
-
-    return newArr
 }
