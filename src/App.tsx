@@ -4,11 +4,50 @@ import { useEffect, useState } from "react"
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+
 function App() {
     const size = 50
     const [algorithm,] = useState<string>("Quick Sort")
     const [arr, setArr] = useState<number[]>(Array.from(Array(size).keys()))
     const [swapIndex, setSwapIndex] = useState<number[]>([])
+
+    const playNote = (frequency: number, duration: number) => {
+        // frequency passed in is a percentage
+        if (frequency > 1) {
+            console.error("frequency percentage > 1. The program is trying to make you deaf")
+            return
+        }
+
+        const minFrequency = 200
+        const maxFrequency = 400
+
+        const audioCtx = new (window.AudioContext)()
+
+        const oscillator = audioCtx.createOscillator();
+
+        // audio comes from both left and right
+        const merger = audioCtx.createChannelMerger(); // Create the channel merger
+        oscillator.connect(merger, 0, 0);
+        oscillator.connect(merger, 0, 1);
+
+        // please make it quieter oh my god why is the default gain so LOUD!!
+        const gain = new GainNode(audioCtx)
+        gain.gain.value = 0.02
+
+        const gainEnvelope = audioCtx.createGain(); // Create the new gain
+        gainEnvelope.connect(gain)
+
+        oscillator.type = "triangle"
+        oscillator.frequency.setValueAtTime(minFrequency + (frequency * (maxFrequency - minFrequency)), audioCtx.currentTime)
+        oscillator.connect(gain).connect(audioCtx.destination)
+
+
+        oscillator.start()
+        setTimeout(() => {
+            oscillator.stop()
+        }, duration)
+    }
+
 
     const swap = async (a: number, b: number) => {
         setArr((arr) => {
@@ -19,6 +58,7 @@ function App() {
             return newArr
         })
         setSwapIndex([a, b])
+        // playNote(Math.max(arr[a], arr[b]) / size, 100)
         await wait(100)
         setSwapIndex([])
     }
