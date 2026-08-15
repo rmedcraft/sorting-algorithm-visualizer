@@ -8,6 +8,7 @@ function App() {
     const size = 50
     const [algorithm,] = useState<string>("Quick Sort")
     const [arr, setArr] = useState<number[]>(Array.from(Array(size).keys()))
+    const [swapIndex, setSwapIndex] = useState<number[]>([])
 
     const swap = async (a: number, b: number) => {
         setArr((arr) => {
@@ -17,7 +18,9 @@ function App() {
             newArr[a] = temp
             return newArr
         })
+        setSwapIndex([a, b])
         await wait(100)
+        setSwapIndex([])
     }
 
     const sorter = new Sorter(swap, size)
@@ -44,30 +47,30 @@ function App() {
                 <h1 className="font-bold text-5xl">{algorithm}</h1>
                 <p className="font-medium text-muted-foreground mt-1">{"im not sure what to put here yet, but this is a sample sentence to see what it looks like"}</p>
                 <hr className="my-5"></hr>
-                <Sorting size={size} arr={arr} />
+                <Sorting size={size} arr={arr} swapIndex={swapIndex} />
             </div>
         </div>
     )
 }
 
 const Sorting: React.FC<any> = (props) => {
-    const { arr, size } = props
+    const { arr, size, swapIndex } = props
 
     return (
         <div className="grow w-full p-5 flex flex-row gap-2 justify-between items-end">
             {arr.map((num: number, index: number) =>
-                <SortingBar key={num} value={num + 1} total={size} index={index} />
+                <SortingBar key={num} value={num + 1} total={size} index={index} swapIndex={swapIndex} />
             )}
         </div>
     )
 }
 
 const SortingBar: React.FC<any> = (props) => {
-    const { value, total, index } = props
+    const { value, total, index, swapIndex } = props
     const height = Math.round(value / total * 100)
 
     return (
-        <div className={`bg-chart-4 w-10 rounded-t-sm`} style={{ height: `${height}%`, order: index }}></div>
+        <div className={`w-10 rounded-t-sm ${swapIndex.includes(index) ? "bg-chart-1" : "bg-chart-4"}`} style={{ height: `${height}%`, order: index }}></div>
     )
 }
 
